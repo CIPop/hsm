@@ -1,15 +1,5 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// SPDX-License-Identifier: MIT
-#include "test_az_iot_queue.h"
-#include <azure/az_core.h>
-#include <azure/iot/internal/az_iot_common_internal.h>
-
-#include <setjmp.h>
-#include <stdarg.h>
-#include <stddef.h>
 #include <stdint.h>
-
-#include <cmocka.h>
+#include <queue.h>
 
 typedef struct test_queue_struct
 {
@@ -20,16 +10,13 @@ typedef struct test_queue_struct
 // Must be defined before including queue.h.
 #define Q_SIZE 2
 #define Q_TYPE test_queue_struct
-#include <azure/iot/internal/az_iot_queue.h>
 
 test_queue_struct e1 = { 1, "Hello 1" };
 test_queue_struct e2 = { 2, "Hello 2" };
 test_queue_struct e3 = { 3, "Hello 3" };
 
-static void test_az_queue_dequeue_succeeds(void** state)
+static void test_az_queue_dequeue_succeeds()
 {
-  (void)state;
-
   az_iot_queue q;
   az_iot_queue_init(&q);
 
