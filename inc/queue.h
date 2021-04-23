@@ -5,6 +5,9 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
+#include <stdbool.h>
+#include <stddef.h>
+
 /* Simple queue parameters - these must be defined by the compilation unit prior to including the template. */
 #ifndef Q_SIZE
 #define Q_SIZE 5
@@ -19,22 +22,22 @@
 #define Q_IDX_TYPE int32_t
 #endif
 
-typedef struct az_iot_queue
+typedef struct queue
 {
   Q_TYPE data[Q_SIZE];
   Q_IDX_TYPE start_idx;
   Q_IDX_TYPE end_idx;
   Q_IDX_TYPE count;
-} az_iot_queue;
+} queue;
 
-void queue_init(az_iot_queue* q)
+void queue_init(queue* q)
 {
   q->count = 0;
   q->start_idx = 0;
   q->end_idx = 0;
 }
 
-bool queue_enqueue(az_iot_queue* q, Q_TYPE* element)
+bool queue_enqueue(queue* q, Q_TYPE* element)
 {
   if (q->count < Q_SIZE)
   {
@@ -48,7 +51,7 @@ bool queue_enqueue(az_iot_queue* q, Q_TYPE* element)
   return false;
 }
 
- Q_TYPE* queue_dequeue(az_iot_queue* q)
+ Q_TYPE* queue_dequeue(queue* q)
 {
   Q_TYPE* ret = NULL;
   if (q->count > 0)

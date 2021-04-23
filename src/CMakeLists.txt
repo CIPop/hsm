@@ -1,3 +1,5 @@
 file(GLOB Sources "*.c")
-add_library(hsm STATIC ${Sources})
 
+include_directories("../inc")
+
+add_library(hfsm STATIC ${Sources})

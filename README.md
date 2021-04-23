@@ -1,3 +1,3 @@
-# Hierarchical State Machine implementations
+# Hierarchical Finite State Machine implementations
 
-This repo contains experimental Hierarchical State Machine implementations as described in http://www.wisdom.weizmann.ac.il/~dharel/SCANNED.PAPERS/Statecharts.pdf
+This repo contains experimental Hierarchical Finite State Machine implementations as described in http://www.wisdom.weizmann.ac.il/~dharel/SCANNED.PAPERS/Statecharts.pdf

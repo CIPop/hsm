@@ -1,6 +1,6 @@
 @startuml
 
-state TestHSM {
+state Testhfsm {
     state Idle
 
     state Connected {
@@ -13,7 +13,7 @@ state TestHSM {
         Subscribed : <b>exit/</b> LOG
 
         [*] --> Subscribing
-        Subscribing -> Subscribed : PAHO_IOT_HSM_SUBSCRIBED
+        Subscribing -> Subscribed : PAHO_IOT_hfsm_SUBSCRIBED
     }
     Connected : <b>entry/</b> LOG
     Connected : <b>exit/</b> LOG
@@ -23,8 +23,8 @@ state TestHSM {
     Disconnecting : <b>exit/</b> LOG
 
     [*] --> Idle
-    Idle --> Connected : PAHO_IOT_HSM_CONNECTED
-    Connected --> Disconnecting : AZ_IOT_HSM_ERROR
+    Idle --> Connected : PAHO_IOT_hfsm_CONNECTED
+    Connected --> Disconnecting : AZ_IOT_hfsm_ERROR
 }
 
 @enduml

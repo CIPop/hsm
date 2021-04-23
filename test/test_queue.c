@@ -1,5 +1,13 @@
 #include <stdint.h>
-#include <queue.h>
+#include <stdio.h>
+#include <assert.h>
+
+#define ASSERT_TRUE(expr) \
+    if (!(expr)) \
+    { \
+        printf("Assert failed in function %s (%s:%d).\n", __func__, __FILE__, __LINE__); \
+        return 1; \
+    }
 
 typedef struct test_queue_struct
 {
@@ -11,83 +19,91 @@ typedef struct test_queue_struct
 #define Q_SIZE 2
 #define Q_TYPE test_queue_struct
 
+#include <queue.h>
+
 test_queue_struct e1 = { 1, "Hello 1" };
 test_queue_struct e2 = { 2, "Hello 2" };
 test_queue_struct e3 = { 3, "Hello 3" };
 
-static void test_az_queue_dequeue_succeeds()
+static int test_queue_dequeue_succeeds()
 {
-  az_iot_queue q;
-  az_iot_queue_init(&q);
+  queue q;
+  queue_init(&q);
 
-  az_iot_queue_enqueue(&q, &e1);
-  az_iot_queue_enqueue(&q, &e2);
+  queue_enqueue(&q, &e1);
+  queue_enqueue(&q, &e2);
 
   test_queue_struct* ret;
-  ret = az_iot_queue_dequeue(&q);
-  assert_int_equal(e1.type, ret->type);
-  ret = az_iot_queue_dequeue(&q);
-  assert_int_equal(e2.type, ret->type);
+  ret = queue_dequeue(&q);
+  ASSERT_TRUE(e1.type == ret->type);
 
-  az_iot_queue_enqueue(&q, &e3);
-  ret = az_iot_queue_dequeue(&q);
-  assert_int_equal(e3.type, ret->type);
+  ret = queue_dequeue(&q);
+  ASSERT_TRUE(e2.type == ret->type);
 
-  az_iot_queue_enqueue(&q, &e2);
-  az_iot_queue_enqueue(&q, &e1);
-  ret = az_iot_queue_dequeue(&q);
-  assert_int_equal(e2.type, ret->type);
-  ret = az_iot_queue_dequeue(&q);
-  assert_int_equal(e1.type, ret->type);
+  queue_enqueue(&q, &e3);
+  ret = queue_dequeue(&q);
+  ASSERT_TRUE(e3.type == ret->type);
+
+  queue_enqueue(&q, &e2);
+  queue_enqueue(&q, &e1);
+  ret = queue_dequeue(&q);
+  ASSERT_TRUE(e2.type == ret->type);
+  ret = queue_dequeue(&q);
+  ASSERT_TRUE(e1.type == ret->type);
+
+  return 0;
 }
 
-static void test_az_queue_enqueue_overflow_fails(void** state)
+static int test_queue_enqueue_overflow_fails()
 {
-  (void)state;
+  queue q;
+  queue_init(&q);
 
-  az_iot_queue q;
-  az_iot_queue_init(&q);
-
-  assert_true(az_iot_queue_enqueue(&q, &e1));
-  assert_true(az_iot_queue_enqueue(&q, &e2));
-  assert_false(az_iot_queue_enqueue(&q, &e3));
-  assert_false(az_iot_queue_enqueue(&q, &e1));
+  ASSERT_TRUE(queue_enqueue(&q, &e1));
+  ASSERT_TRUE(queue_enqueue(&q, &e2));
+  ASSERT_TRUE(!queue_enqueue(&q, &e3));
+  ASSERT_TRUE(!queue_enqueue(&q, &e1));
 
   test_queue_struct* ret;
-  ret = az_iot_queue_dequeue(&q);
-  assert_int_equal(e1.type, ret->type);
+  ret = queue_dequeue(&q);
+  ASSERT_TRUE(e1.type == ret->type);
 
-  ret = az_iot_queue_dequeue(&q);
-  assert_int_equal(e2.type, ret->type);
+  ret = queue_dequeue(&q);
+  ASSERT_TRUE(e2.type == ret->type);
+
+  return 0;
 }
 
-static void test_az_queue_dequeue_underflow_fails(void** state)
+static int test_queue_dequeue_underflow_fails()
 {
-  (void)state;
+  queue q;
+  queue_init(&q);
 
-  az_iot_queue q;
-  az_iot_queue_init(&q);
-
-  assert_true(az_iot_queue_enqueue(&q, &e1));
-  assert_true(az_iot_queue_enqueue(&q, &e2));
+  ASSERT_TRUE(queue_enqueue(&q, &e1));
+  ASSERT_TRUE(queue_enqueue(&q, &e2));
 
   test_queue_struct* ret;
-  ret = az_iot_queue_dequeue(&q);
-  assert_int_equal(e1.type, ret->type);
+  ret = queue_dequeue(&q);
+  ASSERT_TRUE(e1.type == ret->type);
 
-  ret = az_iot_queue_dequeue(&q);
-  assert_int_equal(e2.type, ret->type);
+  ret = queue_dequeue(&q);
+  ASSERT_TRUE(e2.type == ret->type);
 
-  ret = az_iot_queue_dequeue(&q);
-  assert_ptr_equal(NULL, ret);
+  ret = queue_dequeue(&q);
+  ASSERT_TRUE(NULL == ret);
+
+  return 0;
 }
 
-int test_az_iot_queue()
+int main()
 {
-  const struct CMUnitTest tests[] = {
-    cmocka_unit_test(test_az_queue_dequeue_succeeds),
-    cmocka_unit_test(test_az_queue_enqueue_overflow_fails),
-    cmocka_unit_test(test_az_queue_dequeue_underflow_fails),
-  };
-  return cmocka_run_group_tests_name("az_iot_queue", tests, NULL, NULL);
+
+  int ret = 0;
+  ret += test_queue_dequeue_succeeds();
+  ret += test_queue_enqueue_overflow_fails();
+  ret += test_queue_dequeue_underflow_fails();
+
+  printf("Test %s\n", (ret > 0) ? "FAILED" : "PASSED");
+
+  return ret;
 }
