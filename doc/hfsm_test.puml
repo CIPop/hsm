@@ -1,30 +1,41 @@
 @startuml
 
-state Testhfsm {
-    state Idle
+state TestHFSM {
+    state S01 {
+        state S11 {
+            state S21
+            S21 : <b>entry/</b> LOG
+            S21 : <b>exit/</b> LOG
 
-    state Connected {
-        state Subscribing
-        Subscribing : <b>entry/</b> LOG
-        Subscribing : <b>exit/</b> LOG
+            state S22
+            S22 : <b>entry/</b> LOG
+            S22 : <b>exit/</b> LOG
+            S22 : <b>TInternal2/</b> LOG
 
-        state Subscribed
-        Subscribed : <b>entry/</b> LOG
-        Subscribed : <b>exit/</b> LOG
+            [*] --> S21
+            S21 -right->S22 : TPeer2
+        }
+        S11 : <b>entry/</b> LOG
+        S11 : <b>exit/</b> LOG
 
-        [*] --> Subscribing
-        Subscribing -> Subscribed : PAHO_IOT_hfsm_SUBSCRIBED
+        state S12
+        S12 : <b>entry/</b> LOG
+        S12 : <b>exit/</b> LOG
+        S12 : <b>TInternal1/</b> LOG
+
+        [*] --> S11
+        S11 -> S12 : TPeer1
     }
-    Connected : <b>entry/</b> LOG
-    Connected : <b>exit/</b> LOG
+    S01 : <b>entry/</b> LOG
+    S01 : <b>exit/</b> LOG
 
-    state Disconnecting
-    Disconnecting : <b>entry/</b> LOG
-    Disconnecting : <b>exit/</b> LOG
+    state S02
+    S02 : <b>entry/</b> LOG
+    S02 : <b>exit/</b> LOG
+    S02 : <b>TInternal0/</b> LOG
 
-    [*] --> Idle
-    Idle --> Connected : PAHO_IOT_hfsm_CONNECTED
-    Connected --> Disconnecting : AZ_IOT_hfsm_ERROR
+    [*] --> S01
+    S01 -right-> S02 : TPeer0
 }
 
 @enduml

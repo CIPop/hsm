@@ -113,7 +113,7 @@ int hfsm_transition_inner(
   return ret;
 }
 
-bool hfsm_post_sync(hfsm* h, hfsm_event event)
+bool hfsm_post_event(hfsm* h, hfsm_event event)
 {
   assert(h != NULL);
   return h->current_state(h, event, NULL);
