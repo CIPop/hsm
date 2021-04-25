@@ -95,7 +95,7 @@ static int connected(hfsm* me, hfsm_event event, int(** super_state)())
     case hfsm_ENTRY:
       LOG_SUCCESS("%s: event hfsm_ENTRY", __func__);
       // TODO: is the subsribing state really needed?
-      ret = hfsm_transition_inner(me, connected, subscribing);
+      ret = hfsm_transition_substate(me, connected, subscribing);
       break;
 
     case hfsm_EXIT:
@@ -108,7 +108,7 @@ static int connected(hfsm* me, hfsm_event event, int(** super_state)())
       ret = hfsm_transition(me, connected, disconnecting);
 
       // TODO: move to UT :Test transition from super-class to inner.
-      //ret = hfsm_transition_inner(me, connected, subscribing);
+      //ret = hfsm_transition_substate(me, connected, subscribing);
       break;
 
     default:

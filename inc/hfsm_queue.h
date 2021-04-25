@@ -1,14 +1,17 @@
-#ifndef hfsm_STACK_H
-#define hfsm_STACK_H
+#ifndef HFSM_QUEUE_H
+#define HFSM_QUEUE_H
 
 #include <stdint.h>
 #include <stdbool.h>
 #include <assert.h>
 
 #include <hfsm.h>
+#ifndef QUEUE_H
+    #error QUEUE must be included and the queue structure must contain a function pointer as the first parameter.
+#endif
 
 typedef struct hfsm hfsm;
-typedef int (*state_handler)(hfsm* me, hfsm_event event, int(** super_state)());
+typedef int (*state_handler)(hfsm* me, hfsm_event event);
 
 struct hfsm
 {
@@ -115,4 +118,4 @@ bool hfsm_post_event(hfsm* h, hfsm_event event)
   return h->current_state(h, event, NULL);
 }
 
-#endif //!hfsm_STACK_H
+#endif //!HFSM_QUEUE_H

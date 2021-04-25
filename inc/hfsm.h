@@ -20,3 +20,7 @@ struct hfsm_event
 };
 
 typedef struct hfsm_event hfsm_event;
+
+extern const hfsm_event hfsm_entry_event;
+extern const hfsm_event hfsm_exit_event;
+extern const hfsm_event hfsm_timeout_event;
