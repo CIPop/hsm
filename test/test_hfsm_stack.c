@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <assert.h>
+
 #include <test_assert.h>
 
 #include <hfsm_stack.h>
@@ -27,6 +29,11 @@ typedef enum
   T_INTERNAL_0 = HFSM_EVENT(0),
   T_INTERNAL_1 = HFSM_EVENT(1),
   T_INTERNAL_2 = HFSM_EVENT(2),
+  T_SUPER_1 = HFSM_EVENT(3),
+  T_SUPER_2 = HFSM_EVENT(4),
+  T_PEER_0 = HFSM_EVENT(5),
+  T_PEER_1 = HFSM_EVENT(6),
+  T_PEER_2 = HFSM_EVENT(7),
 } test_hfsm_event_type;
 
 static int ref01 = 0;
@@ -52,16 +59,24 @@ static int S01(hfsm* me, hfsm_event event, int(** super_state)())
   {
     case HFSM_ENTRY:
       ref01++;
-      return hfsm_transition_substate(me, S01, S11);
+      ret = hfsm_transition_substate(me, S01, S11);
       break;
 
     case HFSM_EXIT:
       ref01--;
       break;
 
+    case T_PEER_0:
+      ret = hfsm_transition_peer(me, S01, S02);
+      break;
+
+    case T_INTERNAL_0:
+      tinternal0++;
+      break;
+
     default:
-      // Unknown event.
-      ASSERT_TRUE(0);
+      printf("Unknown event %d", event.type);
+      assert(0);
   }
 
   return ret;
@@ -86,13 +101,9 @@ static int S02(hfsm* me, hfsm_event event, int(** super_state)())
       ref02--;
       break;
 
-    case T_INTERNAL_0:
-      tinternal0++;
-      break;
-
     default:
-      // TOP level - ignore unknown events.
-      ASSERT_TRUE(0);
+      printf("Unknown event %d", event.type);
+      assert(0);
   }
 
   return ret;
@@ -111,10 +122,19 @@ static int S11(hfsm* me, hfsm_event event, int(** super_state)())
   {
     case HFSM_ENTRY:
       ref11++;
+      ret = hfsm_transition_substate(me, S11, S21);
       break;
 
     case HFSM_EXIT:
       ref11--;
+      break;
+
+    case T_PEER_1:
+      ret = hfsm_transition_peer(me, S11, S12);
+      break;
+
+    case T_INTERNAL_1:
+      tinternal1++;
       break;
 
     default:
@@ -143,6 +163,10 @@ static int S12(hfsm* me, hfsm_event event, int(** super_state)())
       ref12--;
       break;
 
+    case T_SUPER_1:
+      ret = hfsm_transition_superstate(me, S12, S01);
+      break;
+
     default:
       ret = S01(me, event, NULL);
   }
@@ -162,11 +186,19 @@ static int S21(hfsm* me, hfsm_event event, int(** super_state)())
   switch ((int)event.type)
   {
     case HFSM_ENTRY:
-      ref01++;
+      ref21++;
       break;
 
     case HFSM_EXIT:
-      ref01--;
+      ref21--;
+      break;
+
+    case T_PEER_2:
+      ret = hfsm_transition_peer(me, S21, S22);
+      break;
+
+    case T_INTERNAL_2:
+      tinternal2++;
       break;
 
     default:
@@ -195,6 +227,10 @@ static int S22(hfsm* me, hfsm_event event, int(** super_state)())
       ref01--;
       break;
 
+    case T_SUPER_2:
+      ret = hfsm_transition_superstate(me, S22, S11);
+      break;
+
     default:
       ret = S11(me, event, NULL);
   }
@@ -205,8 +241,9 @@ static int S22(hfsm* me, hfsm_event event, int(** super_state)())
 
 int test_hfsm_stack_internal()
 {
+  ASSERT_TRUE(!hfsm_init(&test_hfsm, S01));
 
-  return 0;
+  return ret;
 }
 
 int main()

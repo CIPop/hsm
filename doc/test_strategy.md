@@ -15,6 +15,9 @@ Test matrix for all supported transitions:
 | TSub0 | Init |
 | TSub1 | S01 |
 | TSub2 | S11 |
+| TInternal0 | S01, S11, S21, S22 |
+| TInternal1 | S11, S21, S22 |
+| TInternal2 | S21 |
 | TSuper1 | S12 |
 | TSuper2 | S22 |
 | TPeer0 | S01, S11, S12, S21, S22 |

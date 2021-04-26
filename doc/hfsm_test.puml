@@ -6,11 +6,11 @@ state TestHFSM {
             state S21
             S21 : <b>entry/</b> ref21++
             S21 : <b>exit/</b> ref21--
+            S21 : <b>TInternal2/</b> tinternal2++
 
             state S22
             S22 : <b>entry/</b> ref22++
             S22 : <b>exit/</b> ref22--
-            S22 : <b>TInternal2/</b> tinternal2++
 
             [*] -> S21
             S21 -right-> S22 : TPeer2
@@ -18,11 +18,11 @@ state TestHFSM {
         }
         S11 : <b>entry/</b> ref11++
         S11 : <b>exit/</b> ref11--
+        S11 : <b>TInternal1/</b> tinternal1++
 
         state S12
         S12 : <b>entry/</b> ref12++
         S12 : <b>exit/</b> ref12--
-        S12 : <b>TInternal1/</b> tinternal1++
 
         [*] --> S11
         S11 -right-> S12 : TPeer1
@@ -30,11 +30,11 @@ state TestHFSM {
     }
     S01 : <b>entry/</b> ref01++
     S01 : <b>exit/</b> ref01--
+    S01 : <b>TInternal0/</b> tinternal0++
 
     state S02
     S02 : <b>entry/</b> ref02++
     S02 : <b>exit/</b> ref02--
-    S02 : <b>TInternal0/</b> tinternal0++
 
     [*] --> S01
     S01 -right-> S02 : TPeer0
