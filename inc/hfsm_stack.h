@@ -63,7 +63,7 @@ int hfsm_transition_peer(hfsm* h, state_handler source_state, state_handler dest
 
   int ret = 0;
   // Super-state handler making a transition must exit all inner states:
-  ret = _hfsm_recursive_exit(h, source_state, destination_state);
+  ret = _hfsm_recursive_exit(h, source_state);
 
   if (source_state == h->current_state)
   {
@@ -97,7 +97,7 @@ int hfsm_transition_substate(
 
   int ret;
   // Super-state handler making a transition must exit all inner states:
-  ret = _hfsm_recursive_exit(h, source_state, destination_state);
+  ret = _hfsm_recursive_exit(h, source_state);
 
   if (source_state == h->current_state)
   {

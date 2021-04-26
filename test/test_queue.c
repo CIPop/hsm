@@ -2,12 +2,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-#define ASSERT_TRUE(expr) \
-    if (!(expr)) \
-    { \
-        printf("Assert failed in function %s (%s:%d).\n", __func__, __FILE__, __LINE__); \
-        return 1; \
-    }
+#include <test_assert.h>
 
 typedef struct test_queue_struct
 {

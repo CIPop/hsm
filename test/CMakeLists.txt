@@ -1,4 +1,4 @@
-include_directories("../inc")
+include_directories("../inc", "./")
 
 add_executable(test_queue test_queue.c)
 add_test(NAME test_queue COMMAND test_queue)
