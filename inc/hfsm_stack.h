@@ -109,6 +109,35 @@ int hfsm_transition_substate(
   return ret;
 }
 
+/*
+    Supported transitions limited to the following:
+    - peer state transitioning to first-level inner state.
+    - super state transitioning to another first-level inner state.
+*/
+int hfsm_transition_superstate(
+    hfsm* h,
+    state_handler source_state,
+    state_handler destination_state)
+{
+  assert(h != NULL);
+  assert(h->current_state != NULL);
+  assert(source_state != NULL);
+  assert(destination_state != NULL);
+
+  int ret;
+  // Super-state handler making a transition must exit all inner states:
+  ret = _hfsm_recursive_exit(h, source_state);
+
+  if (source_state == h->current_state)
+  {
+    // Transitions to inner states will not exit the super-state:
+    h->current_state = destination_state;
+    ret = h->current_state(h, hfsm_exit_event, NULL);
+  }
+
+  return ret;
+}
+
 bool hfsm_post_event(hfsm* h, hfsm_event event)
 {
   assert(h != NULL);

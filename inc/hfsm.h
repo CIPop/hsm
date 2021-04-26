@@ -11,7 +11,7 @@ typedef enum
   HFSM_EVENT_BASE = 10,
 } hfsm_event_type;
 
-#define hfsm_EVENT(id) ((int32_t)(hfsm_EVENT_BASE + id))
+#define HFSM_EVENT(id) ((int32_t)(HFSM_EVENT_BASE + id))
 
 struct hfsm_event
 {

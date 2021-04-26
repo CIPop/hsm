@@ -6,7 +6,7 @@ The HFSM implementations have limited state transition support. The following sc
 
 Substate and peer transitions may happen from a super-state of the current state.
 
-Example test matrix:
+Test matrix for all supported transitions:
 
 ![TestHFSM_Image](./testhfsm.png)
 
@@ -15,6 +15,8 @@ Example test matrix:
 | TSub0 | Init |
 | TSub1 | S01 |
 | TSub2 | S11 |
+| TSuper1 | S12 |
+| TSuper2 | S22 |
 | TPeer0 | S01, S11, S12, S21, S22 |
 | TPeer1 | S11, S21, S22 |
 | TPeer2 | S21 |
