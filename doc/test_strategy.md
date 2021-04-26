@@ -24,4 +24,5 @@ Test matrix for all supported transitions:
 | TPeer1 | S11, S21, S22 |
 | TPeer2 | S21 |
 
+
 Tests will check that all refNN variables are 1 after entering all substates and the substates revert to 0 after they have been exited.

@@ -6,13 +6,6 @@
 
 #include <hfsm_stack.h>
 
-// Event Data Structure, specific to TestHFSM.
-typedef struct evt_struct
-{
-  uint8_t type;
-  char string[10];
-} evt_struct;
-
 static hfsm test_hfsm;
 
 // TestHFSM States
@@ -26,14 +19,14 @@ static int S22(hfsm* me, hfsm_event event, int(** super_state)());
 // TestHFSM-specific events.
 typedef enum
 {
-  T_INTERNAL_0 = HFSM_EVENT(0),
-  T_INTERNAL_1 = HFSM_EVENT(1),
-  T_INTERNAL_2 = HFSM_EVENT(2),
-  T_SUPER_1 = HFSM_EVENT(3),
-  T_SUPER_2 = HFSM_EVENT(4),
-  T_PEER_0 = HFSM_EVENT(5),
-  T_PEER_1 = HFSM_EVENT(6),
-  T_PEER_2 = HFSM_EVENT(7),
+  T_INTERNAL_0 = HFSM_EVENT(1),
+  T_INTERNAL_1 = HFSM_EVENT(2),
+  T_INTERNAL_2 = HFSM_EVENT(3),
+  T_SUPER_1 = HFSM_EVENT(4),
+  T_SUPER_2 = HFSM_EVENT(5),
+  T_PEER_0 = HFSM_EVENT(6),
+  T_PEER_1 = HFSM_EVENT(7),
+  T_PEER_2 = HFSM_EVENT(8),
 } test_hfsm_event_type;
 
 static int ref01 = 0;
@@ -220,11 +213,11 @@ static int S22(hfsm* me, hfsm_event event, int(** super_state)())
   switch ((int)event.type)
   {
     case HFSM_ENTRY:
-      ref01++;
+      ref22++;
       break;
 
     case HFSM_EXIT:
-      ref01--;
+      ref22--;
       break;
 
     case T_SUPER_2:
@@ -238,19 +231,119 @@ static int S22(hfsm* me, hfsm_event event, int(** super_state)())
   return ret;
 }
 
+static hfsm_event tinternal0_evt = { T_INTERNAL_0, NULL };
+static hfsm_event tinternal1_evt = { T_INTERNAL_1, NULL };
+static hfsm_event tinternal2_evt = { T_INTERNAL_2, NULL };
 
-int test_hfsm_stack_internal()
+static hfsm_event tpeer0_evt = { T_PEER_0, NULL };
+static hfsm_event tpeer1_evt = { T_PEER_1, NULL };
+static hfsm_event tpeer2_evt = { T_PEER_2, NULL };
+
+static hfsm_event tsuper1_evt = { T_SUPER_1, NULL };
+static hfsm_event tsuper2_evt = { T_SUPER_2, NULL };
+
+int test_hfsm_stack_internal_transitions()
 {
+  // Init, TSub0, TSub1, TSub2
   ASSERT_TRUE(!hfsm_init(&test_hfsm, S01));
+  ASSERT_TRUE(test_hfsm.current_state == S21);
+  ASSERT_TRUE(ref01 == 1 && ref11 == 1 && ref21 == 1);
 
-  return ret;
+  // TInternal2
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tinternal2_evt));
+  ASSERT_TRUE(tinternal2 == 1);
+
+  // TInternal1 S21
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tinternal1_evt));
+  ASSERT_TRUE(tinternal2 == 1 && tinternal1 == 1);
+
+  // TInternal0 S21
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tinternal0_evt));
+  ASSERT_TRUE(tinternal2 == 1 && tinternal1 == 1 && tinternal0 == 1);
+
+  // TPeer2 S21
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tpeer2_evt));
+  ASSERT_TRUE(test_hfsm.current_state == S22);
+  ASSERT_TRUE(ref01 == 1 && ref11 == 1 && ref22 == 1);
+  ASSERT_TRUE(ref21 == 0);
+
+  // TInternal1 S22
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tinternal1_evt));
+  ASSERT_TRUE(tinternal1 == 2);
+
+  // TInternal0 S22
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tinternal0_evt));
+  ASSERT_TRUE(tinternal1 == 2 && tinternal0 == 2);
+  ASSERT_TRUE(tinternal2 == 1);
+
+  // TSuper2 S22
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tsuper2_evt));
+  ASSERT_TRUE(test_hfsm.current_state == S11);
+  ASSERT_TRUE(ref01 == 1 && ref11 == 1);
+  ASSERT_TRUE(ref21 == 0 && ref22 == 0);
+
+  // TInternal1 S11
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tinternal1_evt));
+  ASSERT_TRUE(tinternal1 == 3);
+
+  // TInternal0 S11
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tinternal0_evt));
+  ASSERT_TRUE(tinternal1 == 3 && tinternal0 == 3);
+
+  // TPeer1 S11
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tpeer1_evt));
+  ASSERT_TRUE(test_hfsm.current_state == S12);
+  ASSERT_TRUE(ref01 == 1 && ref12 == 1);
+  ASSERT_TRUE(ref11 == 0 && ref21 == 0 && ref22 == 0);
+
+  // TInternal0 S12
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tinternal0_evt));
+  ASSERT_TRUE(tinternal0 == 4);
+
+  // TSuper1 S12
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tsuper1_evt));
+  ASSERT_TRUE(test_hfsm.current_state == S01);
+  ASSERT_TRUE(ref01 == 1);
+  ASSERT_TRUE(ref11 == 0 && ref12 == 0 && ref21 == 0 && ref22 == 0);
+
+  // TInternal0 S01
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tinternal0_evt));
+  ASSERT_TRUE(tinternal0 == 5);
+
+  return 0;
 }
+
+int init_peer_transitions()
+{
+  ref01 = 0;
+  ref02 = 0;
+  ref11 = 0;
+  ref12 = 0;
+  ref21 = 0;
+  ref22 = 0;
+
+    // Init, TSub0, TSub1, TSub2
+  ASSERT_TRUE(!hfsm_init(&test_hfsm, S01));
+  ASSERT_TRUE(test_hfsm.current_state == S21);
+  ASSERT_TRUE(ref01 == 1 && ref11 == 1 && ref21 == 1);
+}
+
+int test_hfsm_stack_peer_transitions()
+{
+  // TPeer1 S21
+  if(!init_peer_transitions()) return 1;
+
+  // TPeer1 S22
+
+  return 0;
+}
+
 
 int main()
 {
 
   int ret = 0;
-  ret += test_hfsm_stack_internal();
+  ret += test_hfsm_stack_internal_transitions();
 
   printf("Test %s\n", (ret > 0) ? "FAILED" : "PASSED");
 

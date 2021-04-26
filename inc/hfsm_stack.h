@@ -101,7 +101,7 @@ int hfsm_transition_substate(
 
   if (source_state == h->current_state)
   {
-    // Transitions to inner states will not exit the super-state:
+    // Transitions to sub-states will not exit the super-state:
     h->current_state = destination_state;
     ret = h->current_state(h, hfsm_entry_event, NULL);
   }
@@ -130,9 +130,9 @@ int hfsm_transition_superstate(
 
   if (source_state == h->current_state)
   {
-    // Transitions to inner states will not exit the super-state:
-    h->current_state = destination_state;
+    // Transitions to super states will exit the substate but not enter the superstate again:
     ret = h->current_state(h, hfsm_exit_event, NULL);
+    h->current_state = destination_state;
   }
 
   return ret;
