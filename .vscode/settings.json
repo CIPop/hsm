@@ -2,6 +2,7 @@
     "cmake.configureOnOpen": true,
     "files.associations": {
         "hfsm.h": "c",
-        "queue.h": "c"
+        "queue.h": "c",
+        "hfsm_hardcoded.h": "c"
     }
 }
