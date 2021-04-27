@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <assert.h>
-
 #include <test_assert.h>
 
 #include <hfsm_stack.h>
@@ -313,7 +312,7 @@ int test_hfsm_stack_internal_transitions()
   return 0;
 }
 
-int init_peer_transitions()
+int init_peer_transitions_state_s21()
 {
   ref01 = 0;
   ref02 = 0;
@@ -326,24 +325,86 @@ int init_peer_transitions()
   ASSERT_TRUE(!hfsm_init(&test_hfsm, S01));
   ASSERT_TRUE(test_hfsm.current_state == S21);
   ASSERT_TRUE(ref01 == 1 && ref11 == 1 && ref21 == 1);
+
+  return 0;
 }
 
 int test_hfsm_stack_peer_transitions()
 {
   // TPeer1 S21
-  if(!init_peer_transitions()) return 1;
+  if(init_peer_transitions_state_s21()) return 1;
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tpeer1_evt));
+  ASSERT_TRUE(test_hfsm.current_state == S12);
+  ASSERT_TRUE(ref01 == 1 && ref12 == 1);
+  ASSERT_TRUE(ref11 == 0 && ref21 == 0 && ref22 == 0);
 
   // TPeer1 S22
+  if(init_peer_transitions_state_s21()) return 1;
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tpeer2_evt));
+  ASSERT_TRUE(test_hfsm.current_state == S22);
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tpeer1_evt));
+  ASSERT_TRUE(test_hfsm.current_state == S12);
+  ASSERT_TRUE(ref01 == 1 && ref12 == 1);
+  ASSERT_TRUE(ref11 == 0 && ref21 == 0 && ref22 == 0);
+
+  // TPeer0 S21
+  if(init_peer_transitions_state_s21()) return 1;
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tpeer0_evt));
+  ASSERT_TRUE(test_hfsm.current_state == S02);
+  ASSERT_TRUE(ref02 == 1);
+  ASSERT_TRUE(ref01 == 0 && ref11 == 0 && ref12 == 0 && ref21 == 0 && ref22 == 0);
+
+  // TPeer0 S22
+  if(init_peer_transitions_state_s21()) return 1;
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tpeer2_evt));
+  ASSERT_TRUE(test_hfsm.current_state == S22);
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tpeer0_evt));
+  ASSERT_TRUE(test_hfsm.current_state == S02);
+  ASSERT_TRUE(ref02 == 1);
+  ASSERT_TRUE(ref01 == 0 && ref11 == 0 && ref12 == 0 && ref21 == 0 && ref22 == 0);
+
+  // TPeer0 S11
+  if(init_peer_transitions_state_s21()) return 1;
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tpeer2_evt));
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tsuper2_evt));
+  ASSERT_TRUE(test_hfsm.current_state == S11);
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tpeer0_evt));
+  ASSERT_TRUE(test_hfsm.current_state == S02);
+  ASSERT_TRUE(ref02 == 1);
+  ASSERT_TRUE(ref01 == 0 && ref11 == 0 && ref12 == 0 && ref21 == 0 && ref22 == 0);
+
+  // TPeer0 S12
+  if(init_peer_transitions_state_s21()) return 1;
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tpeer2_evt));
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tsuper2_evt));
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tpeer1_evt));
+  ASSERT_TRUE(test_hfsm.current_state == S12);
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tpeer0_evt));
+  ASSERT_TRUE(test_hfsm.current_state == S02);
+  ASSERT_TRUE(ref02 == 1);
+  ASSERT_TRUE(ref01 == 0 && ref11 == 0 && ref12 == 0 && ref21 == 0 && ref22 == 0);
+
+  // TPeer0 S01
+  if(init_peer_transitions_state_s21()) return 1;
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tpeer2_evt));
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tsuper2_evt));
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tpeer1_evt));
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tsuper1_evt));
+  ASSERT_TRUE(test_hfsm.current_state == S01);
+  ASSERT_TRUE(!hfsm_post_event(&test_hfsm, tpeer0_evt));
+  ASSERT_TRUE(test_hfsm.current_state == S02);
+  ASSERT_TRUE(ref02 == 1);
+  ASSERT_TRUE(ref01 == 0 && ref11 == 0 && ref12 == 0 && ref21 == 0 && ref22 == 0);
 
   return 0;
 }
-
 
 int main()
 {
 
   int ret = 0;
   ret += test_hfsm_stack_internal_transitions();
+  ret += test_hfsm_stack_peer_transitions();
 
   printf("Test %s\n", (ret > 0) ? "FAILED" : "PASSED");
 
