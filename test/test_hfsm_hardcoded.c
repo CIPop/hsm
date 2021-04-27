@@ -141,7 +141,7 @@ static int S11(hfsm* me, hfsm_event event)
       break;
 
     default:
-      ret = S01(me, event);
+      ret = RET_HANDLE_BY_SUPERSTATE;
   }
 
   return ret;
@@ -167,7 +167,7 @@ static int S12(hfsm* me, hfsm_event event)
       break;
 
     default:
-      ret = S01(me, event);
+      ret = RET_HANDLE_BY_SUPERSTATE;
   }
 
   return ret;
@@ -197,7 +197,7 @@ static int S21(hfsm* me, hfsm_event event)
       break;
 
     default:
-      ret = S11(me, event);
+      ret = RET_HANDLE_BY_SUPERSTATE;
   }
 
   return ret;
@@ -223,7 +223,7 @@ static int S22(hfsm* me, hfsm_event event)
       break;
 
     default:
-      ret = S11(me, event);
+      ret = RET_HANDLE_BY_SUPERSTATE;
   }
 
   return ret;

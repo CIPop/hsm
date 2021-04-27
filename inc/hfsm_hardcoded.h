@@ -17,6 +17,8 @@ struct hfsm
   get_parent get_parent_func;
 };
 
+#define RET_HANDLE_BY_SUPERSTATE -1
+
 int hfsm_init(hfsm* h, state_handler initial_state, get_parent get_parent_func)
 {
   assert(h != NULL);
@@ -146,7 +148,20 @@ int hfsm_transition_superstate(
 int hfsm_post_event(hfsm* h, hfsm_event event)
 {
   assert(h != NULL);
-  return h->current_state(h, event);
+  int ret;
+
+  ret = h->current_state(h, event);
+
+  state_handler current = h->current_state;
+  while (ret == RET_HANDLE_BY_SUPERSTATE)
+  {
+    state_handler super = h->get_parent_func(current);
+    assert(super != NULL);
+    current = super;
+    ret = current(h, event);
+  }
+
+  return ret;
 }
 
 #endif //!HFSM_HARDCODED_H
