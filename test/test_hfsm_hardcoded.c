@@ -18,24 +18,28 @@ static int S22(hfsm* me, hfsm_event event);
 // Hardcoded TestHFSM hierarchy structure
 static state_handler test_hfsm_get_parent(state_handler child_state)
 {
+  state_handler parent_state;
+
   if ((child_state == S01) || (child_state == S02))
   {
-    return NULL;
+    parent_state = NULL;
   }
-
-  if ((child_state == S11) || (child_state == S12))
+  else if ((child_state == S11) || (child_state == S12))
   {
-    return S01;
+    parent_state = S01;
   }
-
-  if ((child_state == S21) || (child_state == S22))
+  else if ((child_state == S21) || (child_state == S22))
   {
-    return S11;
+    parent_state = S11;
+  }
+  else
+  {
+    // Unknown state.
+    assert(false);
+    parent_state = NULL;
   }
 
-  // Unknown state.
-  assert(false);
-  return NULL;
+  return parent_state;
 }
 
 // TestHFSM-specific events.
